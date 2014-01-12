@@ -57,23 +57,36 @@ store = SweatStore.new
 
 route :get, :post, :put, '*' do
   # p request
-  request_to_store = "#{es_metadata}\n#{es_body}"
-  store.queue_request request_to_store
+  # store.queue_request request_to_store
+  request.fullpath
 end
 
-helpers do
-  def es_metadata
-    # POST /users/user/68782
-    path = request.env['REQUEST_URI'].split('/').reject(&:empty?)
-    if path.size == 3
-      { index: { _index: path[0], _type: path[1], _id: path[2] } }
-    else
-      nil
-    end
+
+class SweatJob
+  def path
+    request.fullpath
   end
 
-  def es_body
-    JSON.parse(request.env['rack.request.form_vars'])
+  def body
+    JSON.parse(request.body.read)
   end
 end
 
+class ESHandler
+  def initialize
+    @es_client = nil
+  end
+
+  def process jobs
+    content = jobs.map{|job| parse_job(job.path, job.body)}.join("\n")
+    # send content to @es_client
+  end
+
+  private
+  def parse_job path, body
+    components = path.split('/').reject(&:empty?)
+    return false if path.size != 3
+    header = { index: { _index: path[0], _type: path[1], _id: path[2] } }
+    "#{header}\n#{body}"
+  end
+end
