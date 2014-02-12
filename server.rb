@@ -15,7 +15,6 @@ route :get, :post, '*' do
   sweatpants.enqueue "#{path}\n#{body}\n"
 end
 
-
 Thread.new do
   while true do
     sweatpants.tick

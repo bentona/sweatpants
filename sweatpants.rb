@@ -1,41 +1,53 @@
-require 'json'
 require './queue.rb'
-require './workers.rb'
+require 'elasticsearch'
 
 class Sweatpants
-  def initialize queue, worker
-    config
-    @queue = queue
-    @worker = worker
+  def initialize *args
+    # flush frequency option
+    @client = Elasticsearch::Client.new *args
+    @queue = SweatpantsQueue.new
+    self.spawn_tick_thread
   end
 
-  def config
-    @batch_size = 100
-  end
-
-  def enqueue job
-    @queue.enqueue job
+  def spawn_tick_thread
+    Thread.new do
+      while true do
+        self.tick
+        sleep 1
+      end
+    end
   end
 
   def tick
-    jobs = @queue.dequeue @batch_size
     begin
-      @worker.process(jobs)
-    rescue SweatpantsWorkerException => swe
-      @queue.multi_enqueue jobs
-      raise swe
+      flush
+    rescue Exception => e
+      # we never want an exception here to kill our tick thread.
+      $stderr.puts e
     end
   end
-end
 
-=begin
-class SweatJob
-  def path
-    request.fullpath
+  def trap_request? method_name, *args
+    methods_to_trap = [:index, :update]
+    methods_to_trap.include?(method_name)
   end
 
-  def body
-    JSON.parse(request.body.read)
+  def method_missing(method_name, *args, &block)
+    puts "#{method_name} called on Sweatpants client"
+    if trap_request?(method_name, *args)
+      enqueue method_name, *args
+    else
+      @client.send(method_name, *args)
+    end
+  end
+
+  def enqueue method, *args
+    formatted_request = Sweatpants.bulk_format method, *args
+    @queue.enqueue formatted_request
+  end
+
+  def flush
+    puts "flushing queue"
+    # @client.bulk @queue.all
   end
 end
-=end
