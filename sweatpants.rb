@@ -1,21 +1,70 @@
 require './queue.rb'
 require 'elasticsearch'
 
+class ElasticsearchRequest
+  def initialize params
+    @type = params[:type]
+    @index = params[:index]
+    @id = params[:id]
+  end
+
+  def to_bulk
+    [bulk_header, @body].join("\n")
+  end
+
+  def bulk_header
+    throw Exception "bulk_header not defined for #{this.class}"
+  end
+
+  def self.create method_name, params
+    klass = case method_name
+    when :index
+      ElasticsearchIndexRequest
+    else
+      nil
+    end
+    klass.new(params) if klass
+  end
+
+  protected :initialize
+end
+
+class ElasticsearchIndexRequest < ElasticsearchRequest
+  def initialize params
+    super(params)
+    @body = params[:body]
+  end
+
+  def bulk_header
+    { index: { _index: @index, _type: @type, _id: @id } }
+  end
+end
+
+
 class Sweatpants
-  def initialize *args
+
+  CLIENT =
+
+  def initialize es_params, sweatpants_params = {}
     # flush frequency option
-    @client = Elasticsearch::Client.new *args
-    @queue = SweatpantsQueue.new
-    self.spawn_tick_thread
+    @client = Elasticsearch::Client es_params
+    @queue = sweatpants_params[:queue] || SweatpantsQueue.new
+    @flush_frequency = sweatpants_params[:flush_frequency] || 1
+    @actions_to_trap = sweatpants_params[:actions_to_trap] || [:index]
+    @tick_thread = self.spawn_tick_thread
   end
 
   def spawn_tick_thread
-    Thread.new do
+    @tick_thread = Thread.new do
       while true do
         self.tick
-        sleep 1
+        sleep @flush_frequency
       end
     end
+  end
+
+  def join # for testing
+    @tick_thread.join
   end
 
   def tick
@@ -27,27 +76,29 @@ class Sweatpants
     end
   end
 
-  def trap_request? method_name, *args
-    methods_to_trap = [:index, :update]
-    methods_to_trap.include?(method_name)
+  def trap_request? action, *args
+    es_arguments = args[0]
+    sweatpants_arguments = args[1]
+    @actions_to_trap.include?(action) || sweatpants_arguments[:immediate]
   end
 
   def method_missing(method_name, *args, &block)
-    puts "#{method_name} called on Sweatpants client"
+    puts "#{method_name} called on #{self.class} client"
     if trap_request?(method_name, *args)
-      enqueue method_name, *args
+      delay(method_name, *args)
     else
       @client.send(method_name, *args)
     end
   end
 
-  def enqueue method, *args
-    formatted_request = Sweatpants.bulk_format method, *args
-    @queue.enqueue formatted_request
+  def delay method_name, *args
+    request = ElasticsearchRequest.create method_name, args[0]
+    @queue.enqueue request.to_bulk
+    'ok'
   end
 
   def flush
-    puts "flushing queue"
-    # @client.bulk @queue.all
+    #puts "flushing queue"
+    #@client.bulk @queue.dequeue
   end
 end
