@@ -1,53 +1,11 @@
 require './queue.rb'
+require './request.rb'
 require 'elasticsearch'
-
-class ElasticsearchRequest
-  def initialize params
-    @type = params[:type]
-    @index = params[:index]
-    @id = params[:id]
-  end
-
-  def to_bulk
-    [bulk_header, @body].join("\n")
-  end
-
-  def bulk_header
-    throw Exception "bulk_header not defined for #{this.class}"
-  end
-
-  def self.create method_name, params
-    klass = case method_name
-    when :index
-      ElasticsearchIndexRequest
-    else
-      nil
-    end
-    klass.new(params) if klass
-  end
-
-  protected :initialize
-end
-
-class ElasticsearchIndexRequest < ElasticsearchRequest
-  def initialize params
-    super(params)
-    @body = params[:body]
-  end
-
-  def bulk_header
-    { index: { _index: @index, _type: @type, _id: @id } }
-  end
-end
-
 
 class Sweatpants
 
-  CLIENT =
-
-  def initialize es_params, sweatpants_params = {}
-    # flush frequency option
-    @client = Elasticsearch::Client es_params
+  def initialize es_params = {}, sweatpants_params = {}
+    @client = Elasticsearch::Client.new es_params
     @queue = sweatpants_params[:queue] || SweatpantsQueue.new
     @flush_frequency = sweatpants_params[:flush_frequency] || 1
     @actions_to_trap = sweatpants_params[:actions_to_trap] || [:index]
@@ -55,6 +13,7 @@ class Sweatpants
   end
 
   def spawn_tick_thread
+    ## alternatively, begin; sleep 1 && tick; rescue; ensure spawn_tick;
     @tick_thread = Thread.new do
       while true do
         self.tick
@@ -94,11 +53,13 @@ class Sweatpants
   def delay method_name, *args
     request = ElasticsearchRequest.create method_name, args[0]
     @queue.enqueue request.to_bulk
-    'ok'
   end
 
   def flush
-    #puts "flushing queue"
+    puts "flushing queue"
+    puts @queue.contents.join("\n")
+    puts "\n"
+
     #@client.bulk @queue.dequeue
   end
 end

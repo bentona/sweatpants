@@ -6,7 +6,7 @@ class SweatpantsQueue
   end
 
   def enqueue request
-    @store << request
+    true if @store << request
   end
 
   def dequeue count=nil
@@ -17,6 +17,10 @@ class SweatpantsQueue
     requests.each do |request|
       enqueue request
     end
+  end
+
+  def contents
+    @store
   end
 end
 
