@@ -1,6 +1,11 @@
 sweatpants
 ==========
 
+
+[![Build Status](https://secure.travis-ci.org/bentona/sweatpants.png?branch=master)](http://travis-ci.org/bentona/sweatpants)
+[![Code Climate](https://codeclimate.com/github/bentona/sweatpants.png)](https://codeclimate.com/github/bentona/sweatpants)
+
+
 Redis-backed HTTP server that accumulates Elasticsearch requests and sends them as bulk requests. 
 
 elasticsearch_options = {

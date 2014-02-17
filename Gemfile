@@ -1,5 +1,9 @@
 source 'https://rubygems.org'
 
 gem 'redis'
-gem 'sinatra'
-gem 'sinatra-contrib'
+gem 'elasticsearch-ruby'
+
+
+group :test do
+  gem 'rake'
+end
