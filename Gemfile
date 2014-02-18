@@ -5,5 +5,5 @@ gem 'elasticsearch-ruby'
 
 
 group :test do
-  gem 'rake'
+  gem 'rspec'
 end
