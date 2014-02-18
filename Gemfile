@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
 gem 'redis'
-gem 'elasticsearch-ruby'
+gem 'elasticsearch'
 gem 'rspec'
 gem 'rake'
