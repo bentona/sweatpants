@@ -1,9 +1,4 @@
-class ElasticsearchRequest
-  def initialize params
-    @type = params[:type]
-    @index = params[:index]
-    @id = params[:id]
-  end
+module ElasticsearchRequest
 
   def to_bulk
     [bulk_header, @body].join("\n")
@@ -23,10 +18,16 @@ class ElasticsearchRequest
     klass.new(params) if klass
   end
 
-  protected :initialize
 end
 
 class ElasticsearchIndexRequest < ElasticsearchRequest
+  
+  def initialize params
+    @type = params[:type] || nil
+    @index = params[:index] || nil
+    @id = params[:id] || nil
+  end
+
   def initialize params
     super(params)
     @body = params[:body]

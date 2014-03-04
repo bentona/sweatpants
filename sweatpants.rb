@@ -16,9 +16,7 @@ class Sweatpants
     @timer.on_tick { flush }
   end
 
-  #def join # for testing
-  #  @tick_thread.join
-  #end
+  #def join; @tick_thread.join; end
 
   def flush
     begin
@@ -34,7 +32,7 @@ class Sweatpants
   end
 
   def method_missing(method_name, *args, &block)
-    puts "#{method_name} called on #{self.class} client"
+    #puts "#{method_name} called on #{self.class} client"
     if trap_request?(method_name, *args)
       delay(method_name, *args)
     else

@@ -1,7 +1,5 @@
-#require 'spec_helper'
-
+require 'spec_helper'
 require './sweatpants.rb'
-
 
 describe Sweatpants do
   describe '#new' do
