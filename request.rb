@@ -1,38 +1,20 @@
-class ElasticsearchRequest
-  def initialize params
+class QueuedRequest
+
+  def initialize method, params
+    @method = method
     @type = params[:type] || nil
     @index = params[:index] || nil
     @id = params[:id] || nil
+    @body = params[:body] || nil
   end
 
   def to_bulk
-    [bulk_header, @body].join("\n")
+    [bulk_header, @body].map(&:to_json).join("\n")
   end
 
   def bulk_header
-    throw Exception "bulk_header not defined for #{this.class}"
-  end
-
-  def self.create method_name, params
-    klass = case method_name
-    when :index
-      ElasticsearchIndexRequest
-    else
-      nil
-    end
-    klass.new(params) if klass
-  end
-
-  protected :initialize
-end
-
-class ElasticsearchIndexRequest < ElasticsearchRequest
-  def initialize params
-    super(params)
-    @body = params[:body]
-  end
-
-  def bulk_header
-    { index: { _index: @index, _type: @type, _id: @id } }
+    header = { @method.to_sym => { _index: @index, _type: @type } }
+    header[:id] = @id if @id
+    header
   end
 end

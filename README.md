@@ -8,6 +8,11 @@ sweatpants
 
 Redis-backed HTTP server that accumulates Elasticsearch requests and sends them as bulk requests. 
 
+Inspired, in part, by https://github.com/nz/elasticmill
+
+
+Create a sweatpants client.
+```
 elasticsearch_options = {
 	host: 'localhost'
 }
@@ -19,14 +24,20 @@ sweatpants_options = {
 }
 
 sweatpants = Sweatpants.new elasticsearch_options, sweatpants_options
+```
 
+Send sweatpants a request that will be queued.
+```
 sweatpants.index({
 	index: "matches", 
 	type: "ExpertMatch", 
 	id: "1234",
 	body: {some: 'stuff'}
 })
+```
 
+Send sweatpants a request that will be immediately executed.
+```
 sweatpants.index(
 	{
 		index: "matches",
@@ -38,3 +49,4 @@ sweatpants.index(
 		immediate: true
 	}
 )
+```

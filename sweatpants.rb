@@ -43,7 +43,7 @@ class Sweatpants
   private
 
   def delay method_name, *args
-    request = ElasticsearchRequest.create method_name, args[0]
+    request = QueuedRequest.new method_name, args.first
     @queue.enqueue request.to_bulk
   end
 
