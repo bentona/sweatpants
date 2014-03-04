@@ -2,7 +2,7 @@ require './sweatpants.rb'
 
 client = Sweatpants.new
 
-client.index index: "matches", type: 'ExpertMatch', id: "999999999", body: {stuff: 'some stuff'}
+client.index index: "matches", type: 'MyIndex', id: "999999999", body: {stuff: 'some stuff'}
 
 
 

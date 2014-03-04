@@ -1,16 +1,16 @@
 require 'redis'
 
-class SweatpantsQueue
+class SweatpantsQueue < Array
   def initialize
-    @store = []
+    super
   end
 
   def enqueue request
-    true if @store << request
+    true if self << request
   end
 
   def dequeue count=nil
-    count.nil? ? @store.pop(@store.size) : @store.pop(count)
+    count.nil? ? pop(self.size) : pop(count)
   end
 
   def multi_enqueue requests
@@ -20,7 +20,7 @@ class SweatpantsQueue
   end
 
   def contents
-    @store
+    self
   end
 end
 
