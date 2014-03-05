@@ -1,7 +1,4 @@
-require './queue.rb'
-require './request.rb'
 require 'elasticsearch'
-require './timer.rb'
 
 class Sweatpants
 

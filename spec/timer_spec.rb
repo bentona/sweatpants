@@ -1,5 +1,4 @@
 require 'spec_helper'
-require './timer.rb'
 
 describe Timer do
 

@@ -1,5 +1,4 @@
 require 'spec_helper'
-require './sweatpants.rb'
 
 describe Sweatpants do
   let(:request_1){ {index: "matches", type: 'MyIndex', body: {stuff: 'some stuff'} } }

@@ -1,5 +1,4 @@
 require 'spec_helper'
-require './queue.rb'
 require 'fakeredis'
 
 describe RedisSweatpantsQueue do
