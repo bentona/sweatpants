@@ -34,11 +34,10 @@ class RedisSweatpantsQueue
   end
 
   def dequeue count=nil
-    list_length = @redis.llen(@list_name)
-    multi_pop (count.nil? ? list_length : count)
+    count = @redis.llen(@list_name) unless count
+    multi_pop count
   end
 
-  private
   def multi_pop count
     @redis.multi {
       peek count
