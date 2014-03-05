@@ -18,17 +18,15 @@ class SweatpantsQueue < Array
       enqueue request
     end
   end
-
-  def contents
-    self
-  end
 end
 
-class RedisSweatpantsQueue < SweatpantsQueue
-  def initialize redis
-    @redis_list = 'sweatpants_queue'
-    @redis = Redis.new#(:host => "10.0.1.1", :port => 6380)
-    @redis.select '3'
+class RedisSweatpantsQueue
+  attr_reader :redis
+  
+  def initialize params = {}
+    @redis_list = params[:list] || 'sweatpants_queue'
+    @redis = params[:server] || Redis.new#(:host => "10.0.1.1", :port => 6380)
+    @redis.select (params[:database] || 1)
   end
 
   def enqueue request

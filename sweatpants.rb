@@ -21,8 +21,7 @@ class Sweatpants
   def flush
     begin
       puts "flushing queue"
-      puts @queue.contents.join("\n")
-      puts "\n"
+      puts @queue.join("\n")
       #@client.bulk @queue.dequeue
     rescue Exception => e
       # we never want an exception here to kill our tick thread.
