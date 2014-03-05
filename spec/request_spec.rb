@@ -2,19 +2,13 @@ require 'spec_helper'
 require './request.rb'
 
 describe QueuedRequest do
-  before :each do
-    @params_1 = {
-      type: "MyType",
-      index: "users",
-      id: 123,
-      body: {some: 'stuff'}
-    }
-    @request_1 = QueuedRequest.new :index, @params_1
-  end
+
+  let(:params_1) { { type: "MyType", index: "users", id: 123, body: {some: 'stuff'} } }
+  let(:request_1) { QueuedRequest.new :index, params_1 }
 
   describe '#initialize' do
     it 'initializes with proper params' do
-      QueuedRequest.new :index, @params_1
+      QueuedRequest.new :index, params_1
     end
 
     it 'raises when initialized without proper params' do
@@ -24,9 +18,8 @@ describe QueuedRequest do
   end
 
   describe '#to_bulk' do
-    xit 'properly formats a bulk request' do
-      puts @request_1.to_bulk.to_s
-      expect().to eq('')
+    it 'properly formats a bulk request' do
+      expect(request_1.to_bulk).to eq("{\"index\":{\"_index\":\"users\",\"_type\":\"MyType\"},\"id\":123}\n{\"some\":\"stuff\"}")
     end
   end
 end

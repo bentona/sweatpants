@@ -7,7 +7,7 @@ class Timer
   end
 
   def spawn_tick_thread
-    @tick_thread = Thread.new do 
+    Thread.new do 
       while true do
         sleep @frequency
         call_blocks

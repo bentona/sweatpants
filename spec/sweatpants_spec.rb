@@ -2,6 +2,8 @@ require 'spec_helper'
 require './sweatpants.rb'
 
 describe Sweatpants do
+  let(:request_1){ {index: "matches", type: 'MyIndex', body: {stuff: 'some stuff'} } }
+
   describe '#new' do
     it "instantiates with a client and queue" do
       sweatpants = Sweatpants.new
@@ -15,24 +17,23 @@ describe Sweatpants do
     before :each do
       fake_client = double(search: nil, index: nil)
       @sweatpants = Sweatpants.new({}, {client: fake_client, flush_frequency: 10000})
-      @es_args = {index: "matches", type: 'MyIndex', body: {stuff: 'some stuff'} }
     end
 
     it "traps an index request" do
-      @sweatpants.index(@es_args)
+      @sweatpants.index(request_1)
       expect(@sweatpants.queue).to have(1).item
     end
 
     it "doesn't trap a search request" do
-      @sweatpants.search(@es_args)
-      expect(@sweatpants.client).to have_received(:search).with(@es_args)
+      @sweatpants.search(request_1)
+      expect(@sweatpants.client).to have_received(:search).with(request_1)
       expect(@sweatpants.queue).to have(0).items
     end
 
     it "doesn't trap a request marked as immediate" do
-      @sweatpants.index(@es_args, {immediate: true})
+      @sweatpants.index(request_1, {immediate: true})
       expect(@sweatpants.queue).to have(0).items
-      expect(@sweatpants.client).to have_received(:index).with(@es_args)
+      expect(@sweatpants.client).to have_received(:index).with(request_1)
     end
   end
 end

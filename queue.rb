@@ -12,12 +12,6 @@ class SweatpantsQueue < Array
   def dequeue count=nil
     count.nil? ? pop(self.size) : pop(count)
   end
-
-  def multi_enqueue requests
-    requests.each do |request|
-      enqueue request
-    end
-  end
 end
 
 class RedisSweatpantsQueue

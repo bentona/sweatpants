@@ -20,18 +20,14 @@ class Sweatpants
 
   def flush
     begin
-      puts "flushing queue"
-      puts @queue.join("\n")
+      puts @queue.dequeue
       #@client.bulk @queue.dequeue
     rescue Exception => e
-      # we never want an exception here to kill our tick thread.
-      $stderr.puts e
-      # use a Logger, maybe @client's?
+      $stderr.puts e  # use a Logger, maybe @client's?
     end
   end
 
   def method_missing(method_name, *args, &block)
-    #puts "#{method_name} called on #{self.class} client"
     if trap_request?(method_name, *args)
       delay(method_name, *args)
     else
