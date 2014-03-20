@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fakeredis'
 
-describe RedisSweatpantsQueue do
+describe Sweatpants::RedisQueue do
 
   let(:request_1) { {foo: "bar", baz: "buzz"}.to_json }
   let(:request_2) { {some: "stuff"}.to_json }
@@ -10,7 +10,7 @@ describe RedisSweatpantsQueue do
 
   describe '#initialize' do
     it "initializes with default params" do
-      queue = RedisSweatpantsQueue.new
+      queue = Sweatpants::RedisQueue.new
     end
   end
   
@@ -18,7 +18,7 @@ describe RedisSweatpantsQueue do
     
     before :each do
       Redis.new.flushall
-      @queue = RedisSweatpantsQueue.new(server: Redis.new)
+      @queue = Sweatpants::RedisQueue.new(server: Redis.new)
     end
 
     it "can enqueue requests (json strings)" do
@@ -32,7 +32,7 @@ describe RedisSweatpantsQueue do
 
     before :each do
       Redis.new.flushall
-      @queue = RedisSweatpantsQueue.new(server: Redis.new)
+      @queue = Sweatpants::RedisQueue.new(server: Redis.new)
     end
     
     it "dequeues all requests by default" do

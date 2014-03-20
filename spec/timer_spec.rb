@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Timer do
+describe Sweatpants::Timer do
 
   before :each do
-    @timer = Timer.new 1
+    @timer = Sweatpants::Timer.new 1
   end
 
   describe '#on_tick' do

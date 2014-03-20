@@ -1,13 +1,25 @@
 require 'spec_helper'
 
-describe Sweatpants do
+describe Sweatpants::Client do
   let(:request_1){ {index: "matches", type: 'MyIndex', body: {stuff: 'some stuff'} } }
 
   describe '#new' do
     it "instantiates with a client and queue" do
-      sweatpants = Sweatpants.new
+      sweatpants = Sweatpants::Client.new
       sweatpants.instance_variable_get(:@client).should_not be_nil
-      sweatpants.instance_variable_get(:@queue).should be_a SweatpantsQueue
+      sweatpants.instance_variable_get(:@queue).should be_a Sweatpants::SimpleQueue
+    end
+  end
+
+  describe '#configure' do
+    before do
+      Sweatpants::Client.configure do |config|
+        config.flush_frequency = 5
+      end
+    end
+
+    xit "has a flush frequency of 5 seconds" do
+
     end
   end
 
@@ -15,7 +27,7 @@ describe Sweatpants do
     
     before :each do
       fake_client = double(search: nil, index: nil)
-      @sweatpants = Sweatpants.new({}, {client: fake_client, flush_frequency: 10000})
+      @sweatpants = Sweatpants::Client.new({}, {client: fake_client, flush_frequency: 10000})
     end
 
     it "traps an index request" do
