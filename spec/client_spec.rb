@@ -13,13 +13,14 @@ describe Sweatpants::Client do
 
   describe '#configure' do
     before do
-      Sweatpants::Client.configure do |config|
+      Sweatpants.configure do |config|
         config.flush_frequency = 5
       end
     end
 
-    xit "has a flush frequency of 5 seconds" do
-
+    it "has a flush frequency of 5 seconds" do
+      client = Sweatpants::Client.new
+      expect(client.flush_frequency).to eq(5) 
     end
   end
 
