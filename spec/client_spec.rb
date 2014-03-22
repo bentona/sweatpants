@@ -3,6 +3,7 @@ require 'spec_helper'
 describe Sweatpants::Client do
   let(:request_1){ {index: "matches", type: 'MyIndex', body: {stuff: 'some stuff'} } }
 
+
   describe '#new' do
     it "instantiates with a client and queue" do
       sweatpants = Sweatpants::Client.new
@@ -27,8 +28,13 @@ describe Sweatpants::Client do
   describe 'traps requests' do
     
     before :each do
+      Sweatpants.reset
       fake_client = double(search: nil, index: nil)
-      @sweatpants = Sweatpants::Client.new({}, {client: fake_client, flush_frequency: 10000})
+      Sweatpants.configure do |config|
+        config.client = fake_client
+        config.flush_frequency = 10000
+      end
+      @sweatpants = Sweatpants::Client.new()
     end
 
     it "traps an index request" do

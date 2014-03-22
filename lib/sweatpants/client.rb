@@ -5,11 +5,11 @@ module Sweatpants
 
     attr_reader :queue, :client, :actions_to_trap, :flush_frequency
 
-    def initialize es_params = {}
-      @client = Elasticsearch::Client.new(es_params)
-      @queue = Sweatpants.configuration.sweatpants_params[:queue] || Sweatpants::SimpleQueue.new
-      @flush_frequency = sweatpants_params[:flush_frequency] || 1
-      @actions_to_trap = sweatpants_params[:actions_to_trap] || [:index]
+    def initialize es_params=nil
+      @client = es_params.nil? ? Sweatpants.configuration.client : Elasticsearch::Client.new(es_params)
+      @queue = Sweatpants.configuration.queue
+      @flush_frequency = Sweatpants.configuration.flush_frequency
+      @actions_to_trap = Sweatpants.configuration.actions_to_trap
       @timer = Sweatpants::Timer.new(@flush_frequency)
       @timer.on_tick { flush }
     end

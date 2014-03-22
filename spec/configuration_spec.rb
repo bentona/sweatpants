@@ -19,5 +19,19 @@ module Sweatpants
         expect(config.flush_frequency).to eq(7)
       end
     end
+
+    describe ".reset" do
+      before :each do
+        Sweatpants.configure do |config|
+          config.flush_frequency = 5
+        end
+      end
+
+      it "resets the configuration" do
+        Sweatpants.reset
+        config = Sweatpants.configuration
+        expect(config.flush_frequency).to eq(1)
+      end
+    end
   end
 end
