@@ -1,3 +1,4 @@
+# mostly taken from http://brandonhilkert.com/blog/ruby-gem-configuration-patterns
 module Sweatpants
   class Configuration
     attr_accessor :flush_frequency, :queue, :actions_to_trap, :client
