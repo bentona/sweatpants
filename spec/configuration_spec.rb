@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-# client, queue, flush_frequency, trapped_actions, timer
+# client, queue, flush_frequency, actions_to_trap, timer
 
 module Sweatpants
   describe Configuration do
@@ -12,11 +12,25 @@ module Sweatpants
       end
     end
 
-    describe "#drawing_count=" do
+    describe "#actions_to_trap" do
+      it "default value is [:index]" do
+        Configuration.new.actions_to_trap = [:index]
+      end
+    end
+
+    describe "#flush_frequency=" do
       it "can set value" do
         config = Configuration.new
         config.flush_frequency = 7
         expect(config.flush_frequency).to eq(7)
+      end
+    end
+
+    describe "#actions_to_trap=" do
+      it "can set value" do
+        config = Configuration.new
+        config.actions_to_trap = [:index, :test_action]
+        expect(config.actions_to_trap).to eq([:index, :test_action])
       end
     end
 
@@ -31,6 +45,7 @@ module Sweatpants
         Sweatpants.reset
         config = Sweatpants.configuration
         expect(config.flush_frequency).to eq(1)
+        expect(config.actions_to_trap).to eq([:index])
       end
     end
   end
