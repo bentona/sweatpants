@@ -14,12 +14,9 @@ module Sweatpants
       @timer.on_tick { flush }
     end
 
-    #def join; @tick_thread.join; end
-
     def flush
       begin
-        puts @queue.dequeue
-        #@client.bulk @queue.dequeue
+        @client.bulk @queue.dequeue
       rescue Exception => e
         $stderr.puts e  # use a Logger, maybe @client's?
       end

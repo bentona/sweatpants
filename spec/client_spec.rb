@@ -26,6 +26,27 @@ module Sweatpants
       end
     end
 
+    describe '#flush' do
+      before do
+        @es_client = double('es_client')
+        allow(@es_client).to receive(:bulk)
+        @jobs = [{here: 'are'}, {some: 'jobs'}]
+        Sweatpants.configure do |config|
+          config.client = @es_client
+          config.flush_frequency = 10000
+        end
+        @client = Sweatpants::Client.new
+        @client.queue.enqueue @jobs[0]
+        @client.queue.enqueue @jobs[1]
+        @client.flush
+      end
+
+      it 'sends the requests with client.bulk' do
+        expect(@es_client).to have_received(:bulk).with(@jobs)
+      end
+
+    end
+
     describe 'traps requests' do
       
       before :each do
