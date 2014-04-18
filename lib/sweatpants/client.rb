@@ -18,7 +18,7 @@ module Sweatpants
       begin
         @client.bulk @queue.dequeue
       rescue Exception => e
-        $stderr.puts e  # use a Logger, maybe @client's?
+        $stderr.puts e # use a Logger, maybe @client's?
       end
     end
 
@@ -38,9 +38,8 @@ module Sweatpants
     end
 
     def trap_request? action, *args
-      es_arguments = args[0]
       sweatpants_arguments = args[1] || {}
-      @actions_to_trap.include?(action) unless sweatpants_arguments[:immediate]
+      !sweatpants_arguments[:immediate] && @actions_to_trap.include?(action) 
     end
   end
 end

@@ -13,6 +13,10 @@ module Sweatpants
     def dequeue count=nil
       count.nil? ? pop(self.size) : pop(count)
     end
+
+    def peek
+      self
+    end
   end
 end
 
@@ -21,13 +25,13 @@ module Sweatpants
     attr_reader :redis
     
     def initialize params = {}
-      @redis_list = params[:list] || 'sweatpants_queue'
-      @redis = params[:server] || Redis.new#(:host => "10.0.1.1", :port => 6380)
-      @redis.select (params[:database] || 1)
+      @list_name = params[:list]
+      @redis = Redis.new(host: params[:host], port: params[:port])
+      @redis.select params[:database]
     end
 
     def enqueue request
-      @redis.rpush @list_name, request
+      @redis.rpush @list_name, request.to_json
     end
 
     def dequeue count=nil
@@ -36,13 +40,19 @@ module Sweatpants
     end
 
     def multi_pop count
-      @redis.multi {
+      items = @redis.multi {
         peek count
         @redis.ltrim(@list_name, count, -1)
       }[0]
+      items
     end
 
-    def peek count
+    def flushall
+      @redis.flushall
+    end
+
+    def peek count = nil
+      count = @redis.llen(@list_name) unless count
       @redis.lrange(@list_name, 0, count - 1)
     end
   end
