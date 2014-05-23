@@ -11,12 +11,18 @@ module Sweatpants
       @flush_frequency = Sweatpants.configuration.flush_frequency
       @actions_to_trap = Sweatpants.configuration.actions_to_trap
       @timer = Sweatpants::Timer.new(@flush_frequency)
-      @timer.on_tick { flush }
+      @timer.on_tick { 
+        puts "flushing"
+        flush 
+      }
     end
 
     def flush
       begin
-        @client.bulk @queue.dequeue
+        items = @queue.dequeue
+        puts "items: #{items}"
+        @client.bulk(body: items)
+        puts "done bulk"
       rescue Exception => e
         $stderr.puts e # use a Logger, maybe @client's?
       end

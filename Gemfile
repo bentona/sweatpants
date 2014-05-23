@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 gem 'redis'
 gem 'elasticsearch'
 gem 'rake'
+gem 'sidekiq'
+
 
 group :test, :development do
   gem "rspec"

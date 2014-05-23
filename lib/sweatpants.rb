@@ -1,8 +1,9 @@
-require "sweatpants/client"
-require "sweatpants/queue"
-require "sweatpants/timer"
-require "sweatpants/queued_request"
-require "sweatpants/configuration"
+require "./lib/sweatpants/client"
+require "./lib/sweatpants/queue"
+require "./lib/sweatpants/timer"
+require "./lib/sweatpants/queued_request"
+require "./lib/sweatpants/configuration"
+require 'sidekiq'
 
 module Sweatpants
   class << self
@@ -19,5 +20,9 @@ module Sweatpants
 
   def self.reset
     @configuration = Configuration.new
+  end
+
+  def self.test_job
+    Worker.perform('bob', 3)
   end
 end

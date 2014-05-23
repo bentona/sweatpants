@@ -2,8 +2,8 @@ $:.push File.expand_path('../lib', __FILE__)
 
 Gem::Specification.new do |s|
   s.name          = 'sweatpants'
-  s.version       = '0.0.1'
-  s.date          = '2014-04-01'
+  s.version       = '0.0.3'
+  s.date          = '2014-05-05'
   s.summary       = "Wrapper for elasticsearch-ruby that bulks-up requests"
   s.description   = "Sponsored by Originate(http://originate.com)"
   s.authors       = ["Benton Anderson"]
